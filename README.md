@@ -1,4 +1,4 @@
-gofreegovernmentmoney
-=====================
+Go Free Government Money
+========================
 
-GoFreeGovernmentMoney.com features and analysis.
+[GoFreeGovernmentMoney.com](http://www.gofreegovernmentmoney.com) features and analysis.
