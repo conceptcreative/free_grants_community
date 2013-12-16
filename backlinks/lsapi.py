@@ -216,7 +216,7 @@ class lsapi:
                           Offset     = offset)
 
 """
-Copyright (c) 2013 GoFreeGovernmentMoney.com
+Copyright (c) 2013 Free Grants Community
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

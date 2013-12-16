@@ -1,7 +1,7 @@
-Go Free Government Money
-========================
+Ngram Analysis
+==============
 
-[GoFreeGovernmentMoney.com](http://www.gofreegovernmentmoney.com) ngram analysis.
+[Free Grants Community](http://www.gofreegovernmentmoney.com) ngram analysis.
 
 Usage
 -----
