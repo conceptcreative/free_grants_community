@@ -1,13 +1,10 @@
-Adstats Analysis
-================
+# Adstats Analysis
 
 [Free Grants Community](http://www.gofreegovernmentmoney.com) ad network statistics analysis.
 
-Plots
------
+## Plots
 
-Comparing Day / Week / Month Profits
-....................................
+### Comparing Day / Week / Month Profits
 
 ```
 data['Profit'].plot()
@@ -18,8 +15,7 @@ pylab.ylabel('Profit')
 pylab.title('Plot of Profit by Day / Week / Month')
 ```
 
-Comparing Day of Week Profits
-.............................
+### Comparing Day of Week Profits
 
 ```
 data.asfreq(freq='W-SUN')['Profit'].plot()
@@ -34,8 +30,7 @@ pylab.ylabel('Profit')
 pylab.title('Plot of Profit by Day of Week')
 ```
 
-Boxplot for Day of Week Profits
-...............................
+### Boxplot for Day of Week Profits
 
 ```
 dow = pd.DataFrame(data={day: data.asfreq(freq='W-' + day)['Profit'] for day in pd.datetools.DAYS}, columns=pd.datetools.DAYS)
@@ -44,8 +39,7 @@ pylab.ylabel('Profit')
 pylab.title('Boxplot of Profit by Day of Week')
 ```
 
-Usage
------
+## Usage
 
 ```
 > python analyze.py --help
