@@ -1,0 +1,111 @@
+* Notes
+  - Generate data.csv with:
+    python crawl_google_autocomplete.py data.csv --query grants --prefix grants "--exclude=grants pass"
+    Let that run 12+ hours.
+* Analyzing 'data.csv'
+import csv
+from operator import iadd
+from collections import Counter
+
+with open('data.csv', 'rb') as fptr:
+    data = list(csv.reader(fptr))
+
+terms = set(line[1] for line in data)
+terms = list(term for term in terms if 'grants pass' not in term)
+terms.sort()
+
+def ngrams(items):
+    for count in xrange(len(items)):
+        for pos in xrange(len(items)):
+            if (pos + count + 1) > len(items):
+                continue
+            yield items[pos:(pos + count + 1)]
+
+terms = [term.split(' ') for term in terms]
+grams = reduce(lambda x, y: iadd(x, ngrams(y)), terms, [])
+grams = [' '.join(gram) for gram in grams]
+
+c = Counter(grams)
+results = c.most_common()
+
+results = [result for result in results if result[1] >= 10]
+results = [result for result in results if len(result[0]) > 5]
+results = [result for result in results if not result[0].startswith('for ')]
+results = [result for result in results if ' ' in result[0]]
+values = ('grants', 'fund', 'scholarship', 'aid', 'loan')
+results = [result for result in results if any(term in result for term in values)]
+values = (' for', ' to go', ' in', ' the', ' to start', ' to')
+results = [result for result in results if not any(result[0].endswith(term) for term in values)]
+with open('temp.txt', 'w') as fptr:
+    for line in results:
+        fptr.write(line[0] + '\n')
+
+# Open temp.txt and manually edit file.
+# Exclude partial phrases and those that don't make sense.
+
+* Visualizing Clusters of Keywords
+
+import xerox
+import miscellany
+import pitchfork as pf
+
+terms = xerox.paste().splitlines() # Copy from temp.txt
+
+scores = {}
+for alpha in terms:
+    scores[alpha] = {}
+    for beta in terms:
+        scores[alpha][beta] = miscellany.similarity_bigram(alpha, beta)
+
+root = pf.Cluster.pair_cluster(scores)
+
+pf.Cluster.draw_pair_cluster(root, 'pair-bigram.png')
+
+scores = {}
+for alpha in terms:
+    scores[alpha] = {}
+    for beta in terms:
+        scores[alpha][beta] = miscellany.longest_common_subsequence_len(alpha, beta)[1]
+
+root = pf.Cluster.pair_cluster(scores)
+
+pf.Cluster.draw_pair_cluster(root, 'pair-subsequence.png')
+
+## Analyze 2
+
+import miscellany
+from pitchfork import pitchfork as pf
+
+terms = open('../ccbiz/bin/20140225/terms.txt').readlines()
+terms = [line[:-1] for line in terms]
+
+def score(alpha, beta):
+    alpha_parts = alpha.split(' ')
+    beta_parts = beta.split(' ')
+    min_len_parts = float(min(map(len, (alpha_parts, beta_parts))))
+    
+    if len(alpha_parts) > 1 and len(beta_parts) > 1:
+        bigram_parts = miscellany.similarity_bigram(alpha_parts, beta_parts)
+    else:
+        bigram_parts = 0
+
+    subseq_parts = miscellany.longest_common_subsequence_len(alpha_parts, beta_parts)[1] / min_len_parts
+    substr_parts = miscellany.longest_common_substring_len(alpha_parts, beta_parts) / min_len_parts
+
+    min_len_chr = float(min(map(len, (alpha, beta))))
+    bigram_chrs = miscellany.similarity_bigram(alpha, beta)
+    subseq_chrs = miscellany.longest_common_subsequence_len(alpha, beta)[1] / min_len_chr
+    substr_chrs = miscellany.longest_common_substring_len(alpha, beta) / min_len_chr
+
+    return (substr_parts * 10 + subseq_parts * 8 + bigram_parts * 6
+            + substr_chrs * 4 + subseq_chrs * 2 + bigram_chrs)
+
+scores = {}
+for alpha in terms:
+    scores[alpha] = {}
+    for beta in terms:
+        scores[alpha][beta] = score(alpha, beta)
+
+root = pf.Cluster.pair_cluster(scores)
+
+pf.Cluster.draw_pair_cluster(root, 'pair.png')
